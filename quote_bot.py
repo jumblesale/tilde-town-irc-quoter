@@ -25,7 +25,6 @@ def hello(): # This function responds to a user that inputs "Hello Mybot"
 
 def random_quote():
   quote = os.popen("/home/frs/quotes/randquote.py").read()
-  print(quote)
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,7 +37,6 @@ joinchan(channel) # Join the channel using the functions we previously defined
 while 1: # Be careful with these! it might send you to an infinite loop
   ircmsg = ircsock.recv(2048) # receive data from the server
   ircmsg = ircmsg.strip('\n\r') # removing any unnecessary linebreaks.
-  print(ircmsg) # Here we print what's coming from the server
 
   if ircmsg.find(":!quote") != -1: # If someone says !quote
     random_quote()
