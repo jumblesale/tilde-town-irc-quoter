@@ -3,7 +3,7 @@
 
 # Import some necessary libraries.
 import socket
-from subprocess import call
+import os
 
 # Some basic variables used to configure the bot        
 server = "127.0.0.1" # Server
@@ -24,9 +24,10 @@ def hello(): # This function responds to a user that inputs "Hello Mybot"
   ircsock.send("PRIVMSG "+ channel +" :Hello!\n")
 
 def random_quote():
-  quote = call(["//home/frs/quotes/randquote.py"])
-  ircsock.send(quote);
-                  
+  quote = os.popen("/home/frs/quotes/randquote.py").read()
+  print(quote)
+  ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
+
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ircsock.connect((server, 6667)) # Here we connect to the server using the port 6667
 ircsock.send("USER "+ botnick +" "+ botnick +" "+ botnick +" :This bot is a result of a tutoral covered on http://shellium.org/wiki.\n") # user authentication
