@@ -1,3 +1,3 @@
 #!/bin/bash
 
-nohup ./quote_bot.py &
+nohup ./quote_bot.py > log &
