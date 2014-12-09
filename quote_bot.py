@@ -37,7 +37,6 @@ def random_quote(channel):
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
 def connect(server, channel, botnick):
-  ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   ircsock.connect((server, 6667)) # Here we connect to the server using the port 6667
   ircsock.send("USER "+ botnick +" "+ botnick +" "+ botnick +" :This bot is a result of a tutoral covered on http://shellium.org/wiki.\n") # user authentication
   ircsock.send("NICK "+ botnick +"\n") # here we actually assign the nick to the bot
@@ -66,5 +65,6 @@ def listen():
     if ircmsg.find("PING :") != -1: # if the server pings us then we've got to respond!
       ping()
 
+ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
 listen()
