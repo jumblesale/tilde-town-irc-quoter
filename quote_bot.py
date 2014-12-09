@@ -4,9 +4,11 @@
 # Import some necessary libraries.
 import socket
 import os
+import sys
 from optparse import OptionParser
 
 import get_users
+import mentions
 
 parser = OptionParser()
 
@@ -18,7 +20,6 @@ parser.add_option("-n", "--nick", dest="nick", default='quote_bot',
                   help="the nick to use", metavar="NICK")
 
 (options, args) = parser.parse_args()
-
 
 def ping():
   ircsock.send("PONG :pingis\n")  
@@ -43,9 +44,10 @@ def connect(server, channel, botnick):
 
   joinchan(channel)
 
-def mentions(msg):
-  print msg
-
+def say_mentions(msg):
+  (user, messages) = mentions.find_mentions(msg)
+  for mention in messages:
+    ircsock.send("PRIVMSG "+ user + " :" + mention + "\n")
   
 def listen():
   while 1:
@@ -53,16 +55,18 @@ def listen():
     ircmsg = ircsock.recv(2048)
     ircmsg = ircmsg.strip('\n\r')
     
-    print ircmsg
+    print(ircmsg)
 
     if ircmsg.find(":!quote") != -1:
-      random_quote()
+      random_quote(options.channel)
 
     if ircmsg.find(":!mentions") != -1:
-        mentions(ircmsg)
+      say_mentions(ircmsg)
 
     if ircmsg.find("PING :") != -1:
       ping()
+
+    sys.stdout.flush()
 
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
