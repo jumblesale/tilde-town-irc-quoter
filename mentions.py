@@ -23,4 +23,9 @@ def get_user_from_message(msg):
 def extract_message(line):
 	pattern = r'^.*PRIVMSG #.*? :(.*)$'
 	searchObj = re.search(pattern, line, re.I)
-	return searchObj.group(1)
+	if searchObj:
+		return searchObj.group(1)
+	else:
+		return ''
+
+print(find_mentions(':khoi!~khoi@127.0.0.1 PRIVMSG #tildetown :Ah, I see'))
