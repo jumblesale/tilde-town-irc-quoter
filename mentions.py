@@ -8,6 +8,8 @@ def find_mentions(msg):
 			message = extract_message(line.strip('\n\r'))
 			if message.lower().find(user.lower()) != -1:
 				sender = get_user_from_message(line)
+				if sender.lower() == user.lower():
+					continue
 				if sender != "":
 					messages.append(sender + ': ' + message)
 	return (user, messages)
@@ -27,5 +29,3 @@ def extract_message(line):
 		return searchObj.group(1)
 	else:
 		return ''
-
-print(find_mentions(':khoi!~khoi@127.0.0.1 PRIVMSG #tildetown :Ah, I see'))
