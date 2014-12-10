@@ -38,8 +38,8 @@ def random_quote(channel):
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
 def haiku(channel):
-  haiku = os.popen("haiku").read()
-  ircsock.send("PRIVMSG "+ channel +" :" + haiku + "\n")
+  h = os.popen("haiku").read()
+  ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
 
 def connect(server, channel, botnick):
   ircsock.connect((server, 6667))
@@ -66,6 +66,9 @@ def listen():
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(ircmsg)
+
+    if ircmsg.find(":!haiku") != -1:
+      haiku(options.channel)
 
     if ircmsg.find("PING :") != -1:
       ping()
