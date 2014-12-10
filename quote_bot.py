@@ -38,7 +38,7 @@ def random_quote(channel):
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
 def haiku(channel):
-  h = os.popen("haiku").read()
+  h = os.popen("haiku").read().replace("\n", " // ")
   ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
 
 def connect(server, channel, botnick):
