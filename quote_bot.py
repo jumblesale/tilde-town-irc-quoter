@@ -37,6 +37,10 @@ def random_quote(channel):
   quote = os.popen("/home/frs/quotes/randquote.py").read()
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
+def haiku(channel):
+  haiku = os.popen("haiku").read()
+  ircsock.send("PRIVMSG "+ channel +" :" + haiku + "\n")
+
 def connect(server, channel, botnick):
   ircsock.connect((server, 6667))
   ircsock.send("USER "+ botnick +" "+ botnick +" "+ botnick +" :This bot is a result of a tutoral covered on http://shellium.org/wiki.\n") # user authentication
