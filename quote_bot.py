@@ -63,6 +63,12 @@ def say_mentions(user, message):
   for mention in menschns:
     if not "" == mention:
       ircsock.send("PRIVMSG "+ nick + " :" + mention + "\n")
+
+def say_chatty(channel):
+  chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
+  for line in chattyOut:
+    if line:
+      ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
   
 def listen():
   while 1:
@@ -90,6 +96,9 @@ def listen():
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
+
+    if ircmsg.find(":!chatty") != -1:
+      say_chatty(options.channel)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
