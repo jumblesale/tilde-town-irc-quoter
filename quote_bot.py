@@ -9,6 +9,7 @@ from optparse import OptionParser
 
 import get_users
 import mentions
+import formatter
 
 parser = OptionParser()
 
@@ -59,7 +60,9 @@ def listen():
     ircmsg = ircsock.recv(2048)
     ircmsg = ircmsg.strip('\n\r')
     
-    print(ircmsg)
+    formatted = formatter.format_message(ircmsg)
+    if not "" == formatted:
+      print formatted
 
     if ircmsg.find(":!quote") != -1:
       random_quote(options.channel)
