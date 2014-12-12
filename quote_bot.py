@@ -49,10 +49,20 @@ def connect(server, channel, botnick):
 
   joinchan(channel)
 
-def say_mentions(msg):
-  (user, messages) = mentions.find_mentions(msg)
-  for mention in messages:
-    ircsock.send("PRIVMSG "+ user + " :" + mention + "\n")
+def get_user_from_message(msg):
+  try:
+    i1 = msg.index(':') + 1
+    i2 = msg.index('!')
+    return msg[i1:i2]
+  except ValueError:
+    return ""
+
+def say_mentions(user, message):
+  nick = get_user_from_message(message)
+  menschns = os.popen("/home/karlen/bin/mensch %s" % (user)).read().replace("\t", ": ").split("\n")
+  for mention in menschns:
+    if not "" == mention:
+      ircsock.send("PRIVMSG "+ nick + " :" + mention + "\n")
   
 def listen():
   while 1:
@@ -61,14 +71,22 @@ def listen():
     ircmsg = ircmsg.strip('\n\r')
     
     formatted = formatter.format_message(ircmsg)
-    if not "" == formatted:
-      print formatted
+
+    if "" == formatted:
+      continue
+    
+    print formatted
+
+    split = formatted.split("\t")
+    time = split[0]
+    user = split[1]
+    messageText = split[2]
 
     if ircmsg.find(":!quote") != -1:
       random_quote(options.channel)
 
     if ircmsg.find(":!mentions") != -1:
-      say_mentions(ircmsg)
+      say_mentions(user, ircmsg)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
