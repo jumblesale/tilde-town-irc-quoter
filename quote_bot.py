@@ -69,6 +69,9 @@ def listen():
 
     ircmsg = ircsock.recv(2048)
     ircmsg = ircmsg.strip('\n\r')
+
+    if ircmsg.find("PING :") != -1:
+      ping()
     
     formatted = formatter.format_message(ircmsg)
 
