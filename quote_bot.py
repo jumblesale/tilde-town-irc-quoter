@@ -59,7 +59,7 @@ def get_user_from_message(msg):
 
 def say_mentions(user, message):
   nick = get_user_from_message(message)
-  menschns = os.popen("/home/karlen/bin/mensch %s" % (user)).read().replace("\t", ": ").split("\n")
+  menschns = os.popen("/home/karlen/bin/mensch -u %s -h 24 -z +0" % (user)).read().replace("\t", ": ").split("\n")
   for mention in menschns:
     if not "" == mention:
       ircsock.send("PRIVMSG "+ nick + " :" + mention + "\n")
