@@ -62,9 +62,10 @@ def say_mentions(user, message):
   menschns = os.popen("/home/karlen/bin/mensch -u %s -t 24 -z +0" % (user)).read().replace("\t", ": ").split("\n")
   for mention in menschns:
     if not "" == mention:
-      if len(mention) >= 500:
-        mention = mention[:500] + '...'
-      ircsock.send("PRIVMSG "+ nick + " :" + mention + "\n")
+      toSend = "PRIVMSG "+ nick + " :" + mention + "\n"
+      if len(toSend) >= 256:
+        toSend = toSend[:253] + '...'
+      ircsock.send(toSend)
 
 def say_chatty(channel):
   chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
