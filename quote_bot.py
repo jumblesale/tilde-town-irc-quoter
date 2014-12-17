@@ -36,6 +36,8 @@ def hello():
 
 def random_quote(channel):
   quote = os.popen("/home/frs/quotes/randquote.py").read()
+  if len(quote) >= 256:
+    quote = quote[:253] + '...'
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
 def haiku(channel):
