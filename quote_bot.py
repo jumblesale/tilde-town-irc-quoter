@@ -5,6 +5,7 @@
 import socket
 import os
 import sys
+import time
 from optparse import OptionParser
 
 import get_users
@@ -78,6 +79,8 @@ def say_chatty(channel):
 def listen():
   while 1:
 
+    time.sleep(1)
+
     ircmsg = ircsock.recv(2048)
     ircmsg = ircmsg.strip('\n\r')
 
@@ -92,7 +95,7 @@ def listen():
     print formatted
 
     split = formatted.split("\t")
-    time = split[0]
+    timestamp = split[0]
     user = split[1]
     messageText = split[2]
 
