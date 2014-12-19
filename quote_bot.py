@@ -7,9 +7,6 @@ import os
 import sys
 import time
 from optparse import OptionParser
-
-import get_users
-import mentions
 import formatter
 
 parser = OptionParser()
