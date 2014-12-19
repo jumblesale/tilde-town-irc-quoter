@@ -57,6 +57,18 @@ def get_user_from_message(msg):
   except ValueError:
     return ""
 
+# Returns the text after the bot command
+def get_text_from_formatted(fmt):
+  try:
+    command_text = fmt.split('\t', 2)[2:][0]
+    text = command_text.split(' ', 1)[1:]
+    if len(text) > 0:
+      return text[0].replace("\"", "\\\"")
+    else:
+      return ""
+  except ValueError:
+    return ""
+
 def say_mentions(user, message):
   nick = get_user_from_message(message)
   menschns = os.popen("/home/karlen/bin/mensch -u %s -t 24 -z +0" % (user)).read().replace("\t", ": ").split("\n")
@@ -72,7 +84,19 @@ def say_chatty(channel):
   for line in chattyOut:
     if line:
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
-  
+
+def do_tweet(channel, fmt):
+  text = get_text_from_formatted(fmt)
+  chars = len(text)
+  if chars > 140:
+    ircsock.send("PRIVMSG "+ channel + " :Text has " + str(chars) + " chars, but it must have < 140 to tweet.\n")
+  elif chars < 1:
+    ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
+  else:
+    os.popen("echo \"%s\" | tweet > /dev/null" % text)
+        
+    
+
 def listen():
   while 1:
 
@@ -108,6 +132,9 @@ def listen():
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
 
+    if ircmsg.find(":!tweet") != -1:
+      do_tweet(options.channel, formatted)
+
     if ircmsg.find("PING :") != -1:
       ping()
 
@@ -116,3 +143,7 @@ def listen():
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
 listen()
+
+
+
+
