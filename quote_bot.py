@@ -38,6 +38,28 @@ def random_quote(channel):
     quote = quote[:253] + '...'
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
 
+def random_quote_apropos(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) > 1:
+    message = "Sorry, q-apropos only accepts 1 or 0 arguments."
+  else:
+    if len(args) == 1:
+      term = args[0]
+    else:
+      term = ""
+    message = quote_apropos("--apropos", term)
+  sendmsg(channel, message)
+
+def random_quote_from(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) != 1:
+    message = "Sorry, q-from only accepts 1 argument."
+  else:
+    if len(args) == 1:
+      term = args[0]
+      message = quote_apropos("--from", term)
+  sendmsg(channel, message)
+
 def haiku(channel):
   h = os.popen("haiku").read().replace("\n", " // ")
   ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
@@ -48,26 +70,6 @@ def connect(server, channel, botnick):
   ircsock.send("NICK "+ botnick +"\n")
 
   joinchan(channel)
-
-def get_user_from_message(msg):
-  try:
-    i1 = msg.index(':') + 1
-    i2 = msg.index('!')
-    return msg[i1:i2]
-  except ValueError:
-    return ""
-
-# Returns the text after the bot command
-def get_text_from_formatted(fmt):
-  try:
-    command_text = fmt.split('\t', 2)[2:][0]
-    text = command_text.split(' ', 1)[1:]
-    if len(text) > 0:
-      return text[0].replace("\"", "\\\"")
-    else:
-      return ""
-  except ValueError:
-    return ""
 
 def say_mentions(user, message):
   nick = get_user_from_message(message)
@@ -94,8 +96,44 @@ def do_tweet(channel, fmt):
     ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
   else:
     os.popen("echo \"%s\" | tweet > /dev/null" % text)
-        
+    # add confimration message 
     
+def list_commands(channel):
+  sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, commands")
+  
+
+## FUNCTIONS FOR PARSING THE IRC MESSAGES
+
+def get_user_from_message(msg):
+  try:
+    i1 = msg.index(':') + 1
+    i2 = msg.index('!')
+    return msg[i1:i2]
+  except ValueError:
+    return ""
+
+# Returns the text after the bot command
+def get_text_from_formatted(fmt):
+  try:
+    command_text = fmt.split('\t', 2)[2:][0]
+    text = command_text.split(' ', 1)[1:]
+    if len(text) > 0:
+      return text[0].replace("\"", "\\\"")
+    else:
+      return ""
+  except ValueError:
+    return ""
+
+
+## INTERFACE TO quote_apropos.hs
+
+def quote_apropos(flag, arg):
+  args = flag + " " + arg
+  return os.popen("/home/um/bin/quoteapropos " + args).read()
+  
+  
+
+## LISTENER FUNCTION
 
 def listen():
   while 1:
@@ -119,9 +157,15 @@ def listen():
     timestamp = split[0]
     user = split[1]
     messageText = split[2]
-
+    
     if ircmsg.find(":!quote") != -1:
       random_quote(options.channel)
+      
+    if ircmsg.find(":!q-apropos") != -1:
+      random_quote_apropos(options.channel, formatted)
+
+    if ircmsg.find(":!q-from") != -1:
+      random_quote_from(options.channel, formatted)
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
@@ -134,6 +178,9 @@ def listen():
 
     if ircmsg.find(":!tweet") != -1:
       do_tweet(options.channel, formatted)
+
+    if ircmsg.find(":!commands") != -1:
+      list_commands(options.channel)
 
     if ircmsg.find("PING :") != -1:
       ping()
