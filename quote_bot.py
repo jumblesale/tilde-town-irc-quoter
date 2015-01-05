@@ -4,6 +4,7 @@
 # Import some necessary libraries.
 import socket
 import os
+import os.path
 import sys
 import time
 from optparse import OptionParser
@@ -19,6 +20,12 @@ parser.add_option("-n", "--nick", dest="nick", default='quote_bot',
                   help="the nick to use", metavar="NICK")
 
 (options, args) = parser.parse_args()
+
+blacklist = []
+
+# check if there's a blacklist
+if os.path.isfile('./blacklist'):
+  blacklist = open('./blacklist').read().split("\n")
 
 def ping():
   ircsock.send("PONG :pingis\n")  
@@ -151,13 +158,17 @@ def listen():
     if "" == formatted:
       continue
     
-    print formatted
 
     split = formatted.split("\t")
     timestamp = split[0]
     user = split[1]
     messageText = split[2]
+
+    if user in blacklist:
+      continue
     
+    print formatted
+
     if ircmsg.find(":!quote") != -1:
       random_quote(options.channel)
       
