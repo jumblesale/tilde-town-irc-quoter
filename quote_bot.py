@@ -106,7 +106,7 @@ def do_tweet(channel, fmt):
     # add confimration message 
     
 def list_commands(channel):
-  sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, commands")
+  sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, banter, commands")
   
 
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
@@ -130,6 +130,12 @@ def get_text_from_formatted(fmt):
       return ""
   except ValueError:
     return ""
+
+
+def top_bants(channel):
+  text = os.popen("/home/karlen/bin/mensch -b | shuf -n 1").read().split("\t")[2]
+  if text:
+    ircsock.send("PRIVMSG "+ channel + " :" + text + "\n")
 
 
 ## INTERFACE TO quote_apropos.hs
@@ -192,6 +198,9 @@ def listen():
 
     if ircmsg.find(":!commands") != -1:
       list_commands(options.channel)
+
+    if ircmsg.find(":!banter") != -1:
+      top_bants(options.channel)
 
     if ircmsg.find("PING :") != -1:
       ping()
