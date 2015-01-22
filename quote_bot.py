@@ -88,6 +88,15 @@ def say_mentions(user, message):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
+def say_catchup(user, message):
+  catchups = os.popen("/home/karlen/bin/catchup -n 5").read().split("\n")
+  for line in catchups:
+    if not "" == line:
+      toSend = "PRIVMSG "+ nick + " :" + line + "\n"
+      if len(toSend) >= 256:
+        toSend = toSend[:253] + '...'
+      ircsock.send(toSend)
+
 def say_chatty(channel):
   chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
   for line in chattyOut:
@@ -108,12 +117,6 @@ def do_tweet(channel, fmt):
 def list_commands(channel):
   sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, commands")
   
-def say_catchup(channel):
-  catchupOut = os.popen("/home/karlen/bin/catchup -n 5").read().split("\n")
-  for line in catchupOut:
-    if line:
-      ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
-
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
 def get_user_from_message(msg):
@@ -187,9 +190,9 @@ def listen():
       say_mentions(user, ircmsg)
 
     if ircmsg.find(":!chatty") != -1:
-      say_chatty(options.channel)
+      say_chatty(user, ircmsg)
 
-    if ircmsg.find(":!chatty") != -1:
+    if ircmsg.find(":!catchup") != -1:
       say_catchup(options.channel)
 
     if ircmsg.find(":!haiku") != -1:
