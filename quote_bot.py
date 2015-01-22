@@ -108,6 +108,11 @@ def do_tweet(channel, fmt):
 def list_commands(channel):
   sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, commands")
   
+def say_catchup(channel):
+  catchupOut = os.popen("/home/karlen/bin/catchup -n 5").read().split("\n")
+  for line in catchupOut:
+    if line:
+      ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -183,6 +188,9 @@ def listen():
 
     if ircmsg.find(":!chatty") != -1:
       say_chatty(options.channel)
+
+    if ircmsg.find(":!chatty") != -1:
+      say_catchup(options.channel)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
