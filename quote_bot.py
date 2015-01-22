@@ -88,11 +88,11 @@ def say_mentions(user, message):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
-def say_catchup(user, message):
-  catchups = os.popen("/home/karlen/bin/catchup -n 5").read().split("\n")
+def say_catchup(user):
+  catchups = os.popen("/home/karlen/bin/catchup").read().split("\n")
   for line in catchups:
     if not "" == line:
-      toSend = "PRIVMSG "+ nick + " :" + line + "\n"
+      toSend = "PRIVMSG "+ user + " :" + line + "\n"
       if len(toSend) >= 256:
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
@@ -199,7 +199,7 @@ def listen():
       say_chatty(user, ircmsg)
 
     if ircmsg.find(":!catchup") != -1:
-      say_catchup(options.channel)
+      say_catchup(user)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
