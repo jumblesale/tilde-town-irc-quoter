@@ -196,7 +196,7 @@ def listen():
       say_mentions(user, ircmsg)
 
     if ircmsg.find(":!chatty") != -1:
-      say_chatty(user, ircmsg)
+      say_chatty(options.channel)
 
     if ircmsg.find(":!catchup") != -1:
       say_catchup(user)
