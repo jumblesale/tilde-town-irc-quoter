@@ -67,6 +67,17 @@ def random_quote_from(channel, fmt):
       message = quote_apropos("--from", term)
   sendmsg(channel, message)
 
+def random_quote_add(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) == 1:
+      name = args[0]
+      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s" % (name))
+  elif len(args) == 2:
+      name = args[0]
+      number = args[1]
+      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s -n %s" % (name,number))
+  sendmsg(channel, "That quote was added, thanks!")
+
 def haiku(channel):
   h = os.popen("haiku").read().replace("\n", " // ")
   ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
@@ -104,7 +115,7 @@ def say_chatty(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from), !mentions, !catchup, !chatty, !tweet, !haiku, !banter, !commands. Hack my log! ~jumblesale/irc/botlog")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !tweet, !haiku, !banter, !commands. Hack my log! ~jumblesale/irc/botlog")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -118,7 +129,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-  sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, banter, commands")
+    sendmsg(channel, "Enter a command procedded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, tweet, haiku, banter, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -190,6 +201,8 @@ def listen():
     if ircmsg.find(":!q-from") != -1:
       random_quote_from(options.channel, formatted)
 
+    if ircmsg.find(":!q-add") != -1:
+      random_quote_add(options.channel)
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
 
