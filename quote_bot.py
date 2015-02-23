@@ -67,6 +67,14 @@ def random_quote_from(channel, fmt):
       message = quote_apropos("--from", term)
   sendmsg(channel, message)
 
+def famouslastwords(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  name = args[0]
+  flw = os.popen("/home/karlen/bin/famouslastwords %s" % (name)).read().split("\n")
+  for line in flw:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
 def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
@@ -115,7 +123,7 @@ def say_chatty(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !tweet, !haiku, !banter, !commands. Hack my log! ~jumblesale/irc/botlog")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !tweet, !haiku, !banter, !famouslastwords, !commands. Hack my log! ~jumblesale/irc/botlog")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -129,7 +137,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command procedded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, tweet, haiku, banter, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, tweet, haiku, banter, famouslastwords, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -203,6 +211,9 @@ def listen():
 
     if ircmsg.find(":!q-add") != -1:
       random_quote_add(options.channel, formatted)
+
+    if ircmsg.find(":!famouslastwords") != -1:
+      famouslastwords(options.channel, formatted)
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
