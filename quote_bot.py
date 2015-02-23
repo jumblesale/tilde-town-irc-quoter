@@ -203,9 +203,12 @@ def listen():
 
     if ircmsg.find(":!catchup") != -1:
       say_catchup(user)
+<<<<<<< HEAD
 
     if ircmsg.find(":!rollcall") != -1:
       say_rollcall(options.channel)
+=======
+>>>>>>> 5c8cdf8cb56d63a5d467b8dc238ee64857bab5f1
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
