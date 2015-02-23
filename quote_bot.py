@@ -88,11 +88,11 @@ def say_mentions(user, message):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
-def say_catchup(user, message):
-  catchups = os.popen("/home/karlen/bin/catchup -n 5").read().split("\n")
+def say_catchup(user):
+  catchups = os.popen("/home/karlen/bin/catchup").read().split("\n")
   for line in catchups:
     if not "" == line:
-      toSend = "PRIVMSG "+ nick + " :" + line + "\n"
+      toSend = "PRIVMSG "+ user + " :" + line + "\n"
       if len(toSend) >= 256:
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
@@ -103,6 +103,9 @@ def say_chatty(channel):
     if line:
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def say_rollcall(channel):
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from), !mentions, !catchup, !chatty, !tweet, !haiku, !banter, !commands. Hack my log! ~jumblesale/irc/botlog")
+
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
   chars = len(text)
@@ -112,7 +115,7 @@ def do_tweet(channel, fmt):
     ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
   else:
     os.popen("echo \"%s\" | tweet > /dev/null" % text)
-    # add confimration message 
+    sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
   sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, banter, commands")
@@ -196,10 +199,13 @@ def listen():
       say_mentions(user, ircmsg)
 
     if ircmsg.find(":!chatty") != -1:
-      say_chatty(user, ircmsg)
+      say_chatty(options.channel)
 
     if ircmsg.find(":!catchup") != -1:
-      say_catchup(options.channel)
+      say_catchup(user)
+
+    if ircmsg.find(":!rollcall") != -1:
+      say_rollcall(options.channel)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
@@ -221,7 +227,4 @@ def listen():
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
 listen()
-
-
-
 
