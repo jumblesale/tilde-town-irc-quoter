@@ -202,7 +202,8 @@ def listen():
       random_quote_from(options.channel, formatted)
 
     if ircmsg.find(":!q-add") != -1:
-      random_quote_add(options.channel)
+      random_quote_add(options.channel, formatted)
+
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
 
