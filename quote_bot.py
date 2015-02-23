@@ -142,12 +142,10 @@ def get_text_from_formatted(fmt):
   except ValueError:
     return ""
 
-
 def top_bants(channel):
   text = os.popen("/home/karlen/bin/mensch -b | shuf -n 1").read().split("\t")[2]
   if text:
     ircsock.send("PRIVMSG "+ channel + " :" + text + "\n")
-
 
 ## INTERFACE TO quote_apropos.hs
 
@@ -155,8 +153,6 @@ def quote_apropos(flag, arg):
   args = flag + " " + arg
   return os.popen("/home/um/bin/quoteapropos " + args).read()
   
-  
-
 ## LISTENER FUNCTION
 
 def listen():
@@ -175,7 +171,6 @@ def listen():
     if "" == formatted:
       continue
     
-
     split = formatted.split("\t")
     timestamp = split[0]
     user = split[1]
@@ -203,12 +198,9 @@ def listen():
 
     if ircmsg.find(":!catchup") != -1:
       say_catchup(user)
-<<<<<<< HEAD
 
     if ircmsg.find(":!rollcall") != -1:
       say_rollcall(options.channel)
-=======
->>>>>>> 5c8cdf8cb56d63a5d467b8dc238ee64857bab5f1
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
@@ -230,4 +222,3 @@ def listen():
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
 listen()
-
