@@ -75,6 +75,15 @@ def famouslastwords(channel, fmt):
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def ircpopularity(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  fighter1 = args[0]
+  fighter2 = args[1]
+  quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+  for line in quoteaddOut:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
 def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
@@ -129,7 +138,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !commands. Hack my log! ~jumblesale/irc/botlog")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/botlog")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -143,7 +152,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -217,6 +226,9 @@ def listen():
 
     if ircmsg.find(":!q-add") != -1:
       random_quote_add(options.channel, formatted)
+
+    if ircmsg.find(":!ircpopularity") != -1:
+      ircpopularity(options.channel, formatted)
 
     if ircmsg.find(":!famouslastwords") != -1:
       famouslastwords(options.channel, formatted)
