@@ -67,6 +67,34 @@ def random_quote_from(channel, fmt):
       message = quote_apropos("--from", term)
   sendmsg(channel, message)
 
+def famouslastwords(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  name = args[0]
+  flw = os.popen("/home/karlen/bin/famouslastwords %s" % (name)).read().split("\n")
+  for line in flw:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
+def ircpopularity(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  fighter1 = args[0]
+  fighter2 = args[1]
+  quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+  for line in quoteaddOut:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
+def random_quote_add(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) == 1:
+      name = args[0]
+      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s" % (name))
+  elif len(args) == 2:
+      name = args[0]
+      number = args[1]
+      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s -n %s" % (name,number))
+  sendmsg(channel, "That quote was added, thanks!")
+
 def haiku(channel):
   h = os.popen("haiku").read().replace("\n", " // ")
   ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
@@ -103,6 +131,15 @@ def say_chatty(channel):
     if line:
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def say_cursey(channel):
+  curseyOut = os.popen("/home/karlen/bin/cursey").read().split("\n")
+  for line in curseyOut:
+    if line:
+      ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
+def say_rollcall(channel):
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/botlog")
+
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
   chars = len(text)
@@ -112,10 +149,10 @@ def do_tweet(channel, fmt):
     ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
   else:
     os.popen("echo \"%s\" | tweet > /dev/null" % text)
-    # add confimration message 
+    sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-  sendmsg(channel, "Enter a command proceeded by a !: quote, q-apropos, q-from, mentions, chatty, haiku, tweet, banter, commands")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -139,12 +176,10 @@ def get_text_from_formatted(fmt):
   except ValueError:
     return ""
 
-
 def top_bants(channel):
   text = os.popen("/home/karlen/bin/mensch -b | shuf -n 1").read().split("\t")[2]
   if text:
     ircsock.send("PRIVMSG "+ channel + " :" + text + "\n")
-
 
 ## INTERFACE TO quote_apropos.hs
 
@@ -152,8 +187,6 @@ def quote_apropos(flag, arg):
   args = flag + " " + arg
   return os.popen("/home/um/bin/quoteapropos " + args).read()
   
-  
-
 ## LISTENER FUNCTION
 
 def listen():
@@ -172,7 +205,6 @@ def listen():
     if "" == formatted:
       continue
     
-
     split = formatted.split("\t")
     timestamp = split[0]
     user = split[1]
@@ -192,14 +224,29 @@ def listen():
     if ircmsg.find(":!q-from") != -1:
       random_quote_from(options.channel, formatted)
 
+    if ircmsg.find(":!q-add") != -1:
+      random_quote_add(options.channel, formatted)
+
+    if ircmsg.find(":!ircpopularity") != -1:
+      ircpopularity(options.channel, formatted)
+
+    if ircmsg.find(":!famouslastwords") != -1:
+      famouslastwords(options.channel, formatted)
+
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
 
     if ircmsg.find(":!chatty") != -1:
       say_chatty(options.channel)
 
+    if ircmsg.find(":!cursey") != -1:
+      say_cursey(options.channel)
+
     if ircmsg.find(":!catchup") != -1:
       say_catchup(user)
+
+    if ircmsg.find(":!rollcall") != -1:
+      say_rollcall(options.channel)
 
     if ircmsg.find(":!haiku") != -1:
       haiku(options.channel)
@@ -221,7 +268,3 @@ def listen():
 ircsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 connect(options.server, options.channel, options.nick)
 listen()
-
-
-
-
