@@ -39,7 +39,7 @@ def joinchan(chan):
 def hello():
   ircsock.send("PRIVMSG "+ channel +" :Hello!\n")
 
-def random_quote(channel):
+def random_quote(channel)
   quote = os.popen("/home/frs/quotes/randquote.py").read()
   if len(quote) >= 256:
     quote = quote[:253] + '...'
@@ -116,6 +116,18 @@ def say_mentions(user, message):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
+def say_mentionsof(user, message, fmt):
+  nick = get_user_from_message(message)
+  args = get_text_from_formatted(fmt).split()
+  searchterm = args[0]
+  menschnsof = os.popen("/home/karlen/bin/mensch -w %s" % (searchterm)).read().replace("\t", ": ").split("\n")
+  for mentionof in menschnsof:
+    if not "" == mentionof:
+      toSend = "PRIVMSG "+ nick + " :" + mentionof + "\n"
+      if len(toSend) >= 256:
+        toSend = toSend[:253] + '...'
+      ircsock.send(toSend)
+
 def say_catchup(user):
   catchups = os.popen("/home/karlen/bin/catchup").read().split("\n")
   for line in catchups:
@@ -138,7 +150,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/botlog")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !mention-of, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -152,7 +164,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, !mention-of, !catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -235,6 +247,9 @@ def listen():
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
+
+    if ircmsg.find(":!mention-of") != -1:
+        say_mentionsof(user, ircmsg, formatted)
 
     if ircmsg.find(":!chatty") != -1:
       say_chatty(options.channel)
