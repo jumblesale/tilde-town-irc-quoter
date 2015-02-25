@@ -69,8 +69,6 @@ def random_quote_from(channel, fmt):
 
 def random_thing(channel, fmt):
   args = get_text_from_formatted(fmt).split()
-  if len(args) > 1:
-    sendmsg(channel, "Sorry, !random only works with: !random youtube, !random image, !random link, !random gif, !random tilde.")
   if len(args) != 1:
     sendmsg(channel, "Sorry, !random only works with: !random youtube, !random image, !random link, !random gif, !random tilde.")
   else:
