@@ -168,7 +168,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, !mention-of, !catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, mention-of, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
