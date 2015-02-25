@@ -119,7 +119,7 @@ def say_mentions(user, message):
 def say_mentionsof(user, message, fmt):
   args = get_text_from_formatted(fmt).split()
   searchterm = args[0]
-  menschnsof = os.popen("/home/karlen/bin/mensch -w %s" % (searchterm)).read().replace("\t", ": ").split("\n")
+  menschnsof = os.popen("/home/karlen/bin/mensch -w %s | tail -n 32" % (searchterm)).read().replace("\t", ": ").split("\n")
   for mentionof in menschnsof:
     if not "" == mentionof:
       toSend = "PRIVMSG "+ user + " :" + mentionof + "\n"
