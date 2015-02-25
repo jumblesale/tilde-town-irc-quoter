@@ -117,13 +117,12 @@ def say_mentions(user, message):
       ircsock.send(toSend)
 
 def say_mentionsof(user, message, fmt):
-  nick = get_user_from_message(message)
   args = get_text_from_formatted(fmt).split()
   searchterm = args[0]
   menschnsof = os.popen("/home/karlen/bin/mensch -w %s" % (searchterm)).read().replace("\t", ": ").split("\n")
   for mentionof in menschnsof:
     if not "" == mentionof:
-      toSend = "PRIVMSG "+ nick + " :" + mentionof + "\n"
+      toSend = "PRIVMSG "+ user + " :" + mentionof + "\n"
       if len(toSend) >= 256:
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
