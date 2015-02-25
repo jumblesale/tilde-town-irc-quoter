@@ -28,10 +28,10 @@ if os.path.isfile('./blacklist'):
   blacklist = open('./blacklist').read().split("\n")
 
 def ping():
-  ircsock.send("PONG :pingis\n")  
+  ircsock.send("PONG :pingis\n")
 
 def sendmsg(chan , msg):
-  ircsock.send("PRIVMSG "+ chan +" :"+ msg +"\n") 
+  ircsock.send("PRIVMSG "+ chan +" :"+ msg +"\n")
 
 def joinchan(chan):
   ircsock.send("JOIN "+ chan +"\n")
@@ -70,7 +70,7 @@ def random_quote_from(channel, fmt):
 def famouslastwords(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   name = args[0]
-  flw = os.popen("/home/karlen/bin/famouslastwords %s" % (name)).read().split("\n")
+  flw = os.popen("/home/karlen/bin/famouslastwords -v %s" % (name)).read().split("\n")
   for line in flw:
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
