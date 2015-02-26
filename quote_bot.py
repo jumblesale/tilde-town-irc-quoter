@@ -47,14 +47,16 @@ def random_quote(channel):
 
 def random_quote_apropos(channel, fmt):
   args = get_text_from_formatted(fmt).split()
-  if len(args) > 1:
-    message = "Sorry, q-apropos only accepts 1 or 0 arguments."
+  if len(args) != 1:
+    message = "Sorry, q-apropos only accepts 1 argument."
   else:
     if len(args) == 1:
       term = args[0]
     else:
       term = ""
     message = quote_apropos("--apropos", term)
+    if len(message) >= 256:
+        message =  message[:253] + '...'
   sendmsg(channel, message)
 
 def random_quote_from(channel, fmt):
@@ -65,6 +67,8 @@ def random_quote_from(channel, fmt):
     if len(args) == 1:
       term = args[0]
       message = quote_apropos("--from", term)
+    if len(message) >= 256:
+        message =  message[:253] + '...'
   sendmsg(channel, message)
 
 def random_thing(channel, fmt):
@@ -92,18 +96,24 @@ def random_thing(channel, fmt):
 
 def famouslastwords(channel, fmt):
   args = get_text_from_formatted(fmt).split()
-  name = args[0]
-  flw = os.popen("/home/karlen/bin/famouslastwords -v %s" % (name)).read().split("\n")
-  for line in flw:
+  if len(args) != 1:
+   sendmsg(channel, "Sorry, we need the name of one user")
+  else:
+   name = args[0]
+   flw = os.popen("/home/karlen/bin/famouslastwords -v %s" % (name)).read().split("\n")
+   for line in flw:
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def ircpopularity(channel, fmt):
   args = get_text_from_formatted(fmt).split()
-  fighter1 = args[0]
-  fighter2 = args[1]
-  quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
-  for line in quoteaddOut:
+  if len(args) != 2:
+   sendmsg(channel, "Sorry, only two combatants are allowed.")
+  else:
+   fighter1 = args[0]
+   fighter2 = args[1]
+   quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+   for line in quoteaddOut:
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
