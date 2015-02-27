@@ -80,7 +80,7 @@ def random_thing(channel, fmt):
     if type == "image":
         rantin = os.popen("/home/karlen/bin/mensch -i | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
     elif type == "tilde":
-        rantin = os.popen("/home/karlen/bin/rollcall -l | shuf -n 1 | sed 's|^|http://tilde.town/~|g'").read().split("\n")
+        rantin = os.popen("/home/karlen/bin/activetilde | shuf -n 1 | sed 's|^|http://tilde.town/~|g'").read().split("\n")
     elif type == "youtube":
       rantin = os.popen ("/home/karlen/bin/mensch -y | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
     elif type == "link":
@@ -125,8 +125,33 @@ def random_quote_add(channel, fmt):
   elif len(args) == 2:
       name = args[0]
       number = args[1]
-      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s -n %s" % (name,number))
-  sendmsg(channel, "That quote was added, thanks!")
+      try:
+          int(number)
+      except ValueError:
+          sendmsg(channel, "Those are not numbers buddy")
+      else:
+          quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s -n %s" % (name,number))
+          sendmsg(channel, "That quote was added, thanks!")
+
+def random_quote_screenplay(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) != 2:
+      sendmsg(channel, "We need two integer arguements to start and stop the quote")
+  else:
+      startswith = args[0]
+      endswith = args[1]
+      try:
+          int(startswith)
+      except ValueError:
+          sendmsg(channel, "Those are not numbers buddy")
+      else:
+          try:
+              int(endswith)
+          except ValueError:
+              sendmsg(channel, "Those are not numbers buddy")
+          else:
+              screenplay_add = os.popen("/home/karlen/bin/ircscreenplay -s %s -e %s" % (startswith,endswith))
+              sendmsg(channel, "That irc screenplay was added, thanks!")
 
 def haiku(channel):
   h = os.popen("haiku").read().replace("\n", " // ")
@@ -187,7 +212,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -201,7 +226,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -275,6 +300,9 @@ def listen():
 
     if ircmsg.find(":!q-add") != -1:
       random_quote_add(options.channel, formatted)
+
+    if ircmsg.find(":!q-screenplay") != -1:
+      random_quote_screenplay(options.channel, formatted)
 
     if ircmsg.find(":!ircpopularity") != -1:
       ircpopularity(options.channel, formatted)
