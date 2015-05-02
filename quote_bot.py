@@ -40,7 +40,7 @@ def hello():
   ircsock.send("PRIVMSG "+ channel +" :Hello!\n")
 
 def random_quote(channel):
-  quote = os.popen("/home/frs/quotes/randquote.py").read()
+  quote = os.popen("/home/karlen/irc/randquote.py").read()
   if len(quote) >= 256:
     quote = quote[:253] + '...'
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
@@ -190,14 +190,41 @@ def say_mentionsof(user, message, fmt):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
-def say_catchup(user):
-  catchups = os.popen("/home/karlen/bin/catchup").read().split("\n")
-  for line in catchups:
-    if not "" == line:
-      toSend = "PRIVMSG "+ user + " :" + line + "\n"
-      if len(toSend) >= 256:
-        toSend = toSend[:253] + '...'
-      ircsock.send(toSend)
+def say_catchup(channel, user, message, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) >= 2:
+        sendmsg(channel, "Too many arguments, stop arguing!")
+    else:
+        if len(args) == 0:
+            catchups = os.popen("/home/karlen/bin/catchup").read().replace("\t", ": ").split("\n")
+        elif len(args) == 1:
+            numberback = args[0]
+            try:
+                int(numberback)
+            except ValueError:
+                sendmsg(channel, "Those are not numbers buddy")
+            else:
+                catchups = os.popen("/home/karlen/bin/catchup -n %s" % (numberback)).read().replace("\t", ": ").split("\n")
+                for line in catchups:
+                    if not "" == line:
+                      toSend = "PRIVMSG "+ user + " :" + line + "\n"
+                      if len(toSend) >= 256:
+                        toSend = toSend[:253] + '...'
+                      ircsock.send(toSend)
+
+def say_sinceivebeengone(channel, user, message, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) >= 2:
+        sendmsg(channel, "Too many arguments, stop arguing!")
+    else:
+        if len(args) == 0:
+            catchups = os.popen("/home/karlen/bin/sinceivebeengone").read().replace("\t", ": ").split("\n")
+            for line in catchups:
+                if not "" == line:
+                  toSend = "PRIVMSG "+ user + " :" + line + "\n"
+                  if len(toSend) >= 256:
+                    toSend = toSend[:253] + '...'
+                  ircsock.send(toSend)
 
 def say_chatty(channel):
   chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
@@ -291,7 +318,7 @@ def listen():
 
     if ircmsg.find(":!quote") != -1:
       random_quote(options.channel)
-      
+
     if ircmsg.find(":!q-apropos") != -1:
       random_quote_apropos(options.channel, formatted)
 
@@ -323,7 +350,10 @@ def listen():
       say_cursey(options.channel)
 
     if ircmsg.find(":!catchup") != -1:
-      say_catchup(user)
+      say_catchup(options.channel, user, ircmsg, formatted)
+
+    if ircmsg.find(":!sinceivebeengone") != -1:
+      say_sinceivebeengone(options.channel, user, ircmsg, formatted)
 
     if ircmsg.find(":!rollcall") != -1:
       say_rollcall(options.channel)
