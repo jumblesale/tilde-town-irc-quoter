@@ -106,28 +106,28 @@ def famouslastwords(channel, fmt):
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def pondareplay(channel, fmt):
-  args = get_text_from_formatted(fmt).split()
-  if len(args) != 1:
-   sendmsg(channel, "Sorry, we need a replay topic")
-  else:
-   topic = args[0]
-   flw = os.popen("python /home/karlen/bin/pondareplay %s" % (topic)).read().split("\n")
-   for line in flw:
-      if line:
+    args = get_text_from_formatted(fmt).split()
+    if len(args) == 1:
+        flw = os.popen("python /home/karlen/bin/pondareplay --random Y" ).read().split("\n")
+    elif len(args) == 1:
+        topic = args[0]
+        flw = os.popen("python /home/karlen/bin/pondareplay --search %s" % (topic)).read().split("\n")
+    for line in flw:
+        if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
-
-def ircpopularity(channel, fmt):
-  args = get_text_from_formatted(fmt).split()
-  if len(args) != 2:
-   sendmsg(channel, "Sorry, only two combatants are allowed.")
-  else:
-   fighter1 = args[0]
-   fighter2 = args[1]
-   quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
-   for line in quoteaddOut:
-      if line:
+          time.sleep(0.75)
+ 
+ def ircpopularity(channel, fmt):
+   args = get_text_from_formatted(fmt).split()
+   if len(args) != 2:
+    sendmsg(channel, "Sorry, only two combatants are allowed.")
+   else:
+    fighter1 = args[0]
+    fighter2 = args[1]
+    quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+    for line in quoteaddOut:
+       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
-          time.sleep(0.5)
 
 def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
