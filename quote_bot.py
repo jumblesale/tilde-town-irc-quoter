@@ -105,16 +105,28 @@ def famouslastwords(channel, fmt):
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
-def ircpopularity(channel, fmt):
-  args = get_text_from_formatted(fmt).split()
-  if len(args) != 2:
-   sendmsg(channel, "Sorry, only two combatants are allowed.")
-  else:
-   fighter1 = args[0]
-   fighter2 = args[1]
-   quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
-   for line in quoteaddOut:
-      if line:
+def pondareplay(channel, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) == 0:
+        flw = os.popen("python /home/karlen/bin/pondareplay --random Y | /home/karlen/bin/pontidy" ).read().split("\n")
+    elif len(args) > 0:
+        topic = args[0]
+        flw = os.popen("python /home/karlen/bin/pondareplay --search %s | /home/karlen/bin/pontidy" % (topic)).read().split("\n")
+    for line in flw:
+        if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+          time.sleep(0.75)
+ 
+ def ircpopularity(channel, fmt):
+   args = get_text_from_formatted(fmt).split()
+   if len(args) != 2:
+    sendmsg(channel, "Sorry, only two combatants are allowed.")
+   else:
+    fighter1 = args[0]
+    fighter2 = args[1]
+    quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+    for line in quoteaddOut:
+       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def random_quote_add(channel, fmt):
@@ -239,7 +251,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -253,7 +265,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, !pondareplay, !commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -336,6 +348,9 @@ def listen():
 
     if ircmsg.find(":!famouslastwords") != -1:
       famouslastwords(options.channel, formatted)
+
+    if ircmsg.find(":!pondareplay") != -1:
+      pondareplay(options.channel, formatted)
 
     if ircmsg.find(":!mentions") != -1:
       say_mentions(user, ircmsg)
