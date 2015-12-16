@@ -108,10 +108,10 @@ def famouslastwords(channel, fmt):
 def pondareplay(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) == 1:
-        flw = os.popen("python /home/karlen/bin/pondareplay --random Y" ).read().split("\n")
+        flw = os.popen("python /home/karlen/bin/pondareplay --random Y | /home/karlen/bin/pontidy" ).read().split("\n")
     elif len(args) == 1:
         topic = args[0]
-        flw = os.popen("python /home/karlen/bin/pondareplay --search %s" % (topic)).read().split("\n")
+        flw = os.popen("python /home/karlen/bin/pondareplay --search %s | /home/karlen/bin/pontidy" % (topic)).read().split("\n")
     for line in flw:
         if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
