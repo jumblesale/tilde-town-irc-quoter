@@ -117,7 +117,7 @@ def pondareplay(channel, fmt):
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
           time.sleep(0.75)
  
- def ircpopularity(channel, fmt):
+def ircpopularity(channel, fmt):
    args = get_text_from_formatted(fmt).split()
    if len(args) != 2:
     sendmsg(channel, "Sorry, only two combatants are allowed.")
