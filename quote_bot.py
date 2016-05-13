@@ -105,6 +105,16 @@ def famouslastwords(channel, fmt):
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def rememberthem(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) >= 1:
+   sendmsg(channel, "Sorry, that's too much remembering for me")
+  else:
+   flw = os.popen("shuf -n 1 ~karlen/reference/zombies").read().split("\n")
+   for line in flw:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + "pour out a 40 ounce for " + line + " :(" + "\n")
+
 def pondareplay(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) == 0:
@@ -251,7 +261,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -265,7 +275,7 @@ def do_tweet(channel, fmt):
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
     
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, !pondareplay, !commands.")
+    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, pondareplay, pourouta40, commands.")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -349,6 +359,8 @@ def listen():
     if ircmsg.find(":!famouslastwords") != -1:
       famouslastwords(options.channel, formatted)
 
+    if ircmsg.find(":!pourouta40") != -1:
+      rememberthem(options.channel, formatted)
     if ircmsg.find(":!pondareplay") != -1:
       pondareplay(options.channel, formatted)
 
