@@ -148,8 +148,8 @@ def ircpopularity(channel, fmt):
         fighter2 = args[1]
         quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
         for line in quoteaddOut:
-        if line:
-            ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+            if line:
+                ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
