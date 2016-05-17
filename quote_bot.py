@@ -208,16 +208,6 @@ def say_mentions(user, message):
         toSend = toSend[:253] + '...'
       ircsock.send(toSend)
 
-def sinceivebeengone(user, message):
-  nick = get_user_from_message(message)
-  menschns = os.popen("/home/karlen/bin/sinceivebeengone" % (user)).read().replace("\t", ": ").split("\n")
-  for mention in menschns:
-    if not "" == mention:
-      toSend = "PRIVMSG "+ nick + " :" + mention + "\n"
-      if len(toSend) >= 256:
-        toSend = toSend[:253] + '...'
-      ircsock.send(toSend)
-
 def say_mentionsof(user, message, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
@@ -261,19 +251,6 @@ def say_catchup(channel, user, message, fmt):
                       if len(toSend) >= 256:
                         toSend = toSend[:253] + '...'
                       ircsock.send(toSend)
-
-def say_sinceivebeengone(channel, user, message, fmt):
-    args = get_text_from_formatted(fmt).split()
-    if len(args) >= 1:
-        sendmsg(channel, "Too many arguments, stop arguing!")
-    elif len(args) == 0:
-        sinces = os.popen("/home/karlen/bin/sinceivebeengone %s" % (user)).read().replace("\t", ": ").split("\n")
-        for line in sinces:
-            if not "" == line:
-              toSend = "PRIVMSG "+ user + " :" + line + "\n"
-              if len(toSend) >= 256:
-                toSend = toSend[:253] + '...'
-              ircsock.send(toSend)
 
 def say_chatty(channel):
   chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
@@ -409,9 +386,6 @@ def listen():
 
     if ircmsg.find(":!catchup") != -1:
       say_catchup(options.channel, user, ircmsg, formatted)
-
-    if ircmsg.find(":!sinceivebeengone") != -1:
-      say_sinceivebeengone(options.channel, user, ircmsg, formatted)
 
     if ircmsg.find(":!rollcall") != -1:
       say_rollcall(options.channel)
