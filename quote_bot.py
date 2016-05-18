@@ -212,7 +212,7 @@ def say_mentionsof(user, message, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
       searchterm = args[0]
-      menschnsof = os.popen("/home/karlen/bin/mensch -p -w %s | tail -n 32" % (searchterm)).read().replace("\t", ": ").split("\n")
+      menschnsof = os.popen("/home/karlen/bin/mensch -p -w %s | tail -n 5" % (searchterm)).read().replace("\t", ": ").split("\n")
   elif len(args) == 2:
       searchterm = args[0]
       number = args[1]
