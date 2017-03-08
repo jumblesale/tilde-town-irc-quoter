@@ -277,7 +277,11 @@ def do_tweet(channel, fmt):
   else:
     os.popen("echo \"%s\" | tweet > /dev/null" % text)
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
-    
+
+def say_townage(channel):
+    townageValue = os.popen("/home/karlen/bin/tday").read()
+    sendmsg(channel, "Happy "+ str(townageValue))
+
 def list_commands(channel):
     sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, pondareplay, pourouta40, chatabout commands.")
   
@@ -380,6 +384,9 @@ def listen():
 
     if ircmsg.find(":!chatty") != -1:
       say_chatty(options.channel)
+
+    if ircmsg.find(":!tday") != -1:
+      say_townage(options.channel)
 
     if ircmsg.find(":!cursey") != -1:
       say_cursey(options.channel)
