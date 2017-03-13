@@ -265,7 +265,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -277,9 +277,13 @@ def do_tweet(channel, fmt):
   else:
     os.popen("echo \"%s\" | tweet > /dev/null" % text)
     sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
-    
+
+def say_townage(channel):
+    townageValue = os.popen("/home/karlen/bin/tday").read()
+    sendmsg(channel, "Happy "+ str(townageValue))
+
 def list_commands(channel):
-    sendmsg(channel, "Enter a command proceeded by a !: quote (q-apropos, q-from, q-add, q-screenplay), mentions, mention-of, random, catchup, chatty, cursey, tweet, haiku, banter, famouslastwords, ircpopularity, pondareplay, pourouta40, chatabout commands.")
+    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -380,6 +384,9 @@ def listen():
 
     if ircmsg.find(":!chatty") != -1:
       say_chatty(options.channel)
+
+    if ircmsg.find(":!tday") != -1:
+      say_townage(options.channel)
 
     if ircmsg.find(":!cursey") != -1:
       say_cursey(options.channel)
