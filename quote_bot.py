@@ -4,6 +4,7 @@
 # Import some necessary libraries.
 import socket
 import os
+import subprocess
 import os.path
 import sys
 import time
@@ -40,7 +41,7 @@ def hello():
   ircsock.send("PRIVMSG "+ channel +" :Hello!\n")
 
 def random_quote(channel):
-  quote = os.popen("/home/karlen/irc/randquote.py").read()
+  quote = subprocess.check_output(["/home/karlen/irc/randquote.py"])
   if len(quote) >= 256:
     quote = quote[:253] + '...'
   ircsock.send("PRIVMSG "+ channel +" :" + quote + "\n")
@@ -78,15 +79,15 @@ def random_thing(channel, fmt):
   else:
     type = args[0]
     if type == "image":
-        rantin = os.popen("/home/karlen/bin/mensch -i | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
+        rantin = subprocess.check_output(["/home/karlen/bin/qb/ranting.sh", "-i"]).split("\n")
     elif type == "tilde":
-        rantin = os.popen("/home/karlen/bin/activetilde | shuf -n 1 | sed 's|^|http://tilde.town/~|g'").read().split("\n")
+        rantin = subprocess.check_output(["/home/karlen/bin/qb/ranting.sh", "-t"]).split("\n")
     elif type == "youtube":
-      rantin = os.popen ("/home/karlen/bin/mensch -y | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
+        rantin = subprocess.check_output(["/home/karlen/bin/qb/ranting.sh", "-y"]).split("\n")
     elif type == "link":
-      rantin = os.popen ("/home/karlen/bin/mensch -l | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
+        rantin = subprocess.check_output(["/home/karlen/bin/qb/ranting.sh", "-l"]).split("\n")
     elif type == "gif":
-      rantin = os.popen ("/home/karlen/bin/mensch -g | shuf -n 1 | awk -F '\t' '{print $3}'").read().split("\n")
+        rantin = subprocess.check_output(["/home/karlen/bin/qb/ranting.sh", "-g"]).split("\n")
     if 'rantin' in locals():
         for line in rantin:
           if line:
@@ -100,7 +101,7 @@ def famouslastwords(channel, fmt):
    sendmsg(channel, "Sorry, we need the name of one user")
   else:
    name = args[0]
-   flw = os.popen("/home/karlen/bin/famouslastwords -v %s" % (name)).read().split("\n")
+   flw = subprocess.check_output(["/home/karlen/bin/famouslastwords", "-v", name]).split("\n")
    for line in flw:
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
@@ -110,18 +111,16 @@ def rememberthem(channel, fmt):
   if len(args) >= 1:
    sendmsg(channel, "Sorry, that's too much remembering for me")
   else:
-   flw = os.popen("shuf -n 1 ~karlen/reference/zombies").read().split("\n")
-   for line in flw:
-      if line:
-          ircsock.send("PRIVMSG "+ channel + " :" + "pour out a 40 ounce for " + line + " :(" + "\n")
+   flw = subprocess.check_output(["/home/karlen/bin/qb/p40.sh"]).split("\n")
+   ircsock.send("PRIVMSG "+ channel + " :" + "pour out a 40 ounce for " + str(flw[0]) + " :(" + "\n")
 
 def pondareplay(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) == 0:
-        flw = os.popen("python /home/karlen/bin/pondareplay --random Y | /home/karlen/bin/pontidy" ).read().split("\n")
+        flw = subprocess.check_output(["/home/karlen/bin/qb/pnda.sh","-r"]).split("\n")
     elif len(args) > 0:
         topic = args[0]
-        flw = os.popen("python /home/karlen/bin/pondareplay --search %s | /home/karlen/bin/pontidy" % (topic)).read().split("\n")
+        flw = subprocess.check_output(["/home/karlen/bin/qb/pnda.sh","-s",topic]).split("\n")
     for line in flw:
         if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
@@ -133,7 +132,7 @@ def chatabout(channel, fmt):
         sendmsg(channel, "What you want a mention of? TELL ME!")
     elif len(args) > 0:
         topic = args[0]
-        flw = os.popen("/home/karlen/bin/mensch -p -w %s | tail -n 3" % (topic)).read().split("\n")
+        flw = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-c",topic]).split("\n")
     for line in flw:
         if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
@@ -146,7 +145,7 @@ def ircpopularity(channel, fmt):
     else:
         fighter1 = args[0]
         fighter2 = args[1]
-        quoteaddOut = os.popen("/home/karlen/bin/ircpopularity %s %s" % (fighter1,fighter2)).read().split("\n")
+        quoteaddOut = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-irc",fighter1,fighter2]).split("\n")
         for line in quoteaddOut:
             if line:
                 ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
@@ -155,7 +154,8 @@ def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
       name = args[0]
-      quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s" % (name))
+      quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-b","-u",name])
+      sendmsg(channel, "That quote was added, thanks!")
   elif len(args) == 2:
       name = args[0]
       number = args[1]
@@ -164,7 +164,7 @@ def random_quote_add(channel, fmt):
       except ValueError:
           sendmsg(channel, "Those are not numbers buddy")
       else:
-          quoteadd = os.popen("/home/karlen/bin/ircquoteadd -u %s -n %s" % (name,number))
+          quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-b","-u",name,"-n",number])
           sendmsg(channel, "That quote was added, thanks!")
 
 def random_quote_screenplay(channel, fmt):
@@ -184,11 +184,11 @@ def random_quote_screenplay(channel, fmt):
           except ValueError:
               sendmsg(channel, "Those are not numbers buddy")
           else:
-              screenplay_add = os.popen("/home/karlen/bin/ircscreenplay -s %s -e %s" % (startswith,endswith))
+              screenplay_add = subprocess.call(["/home/karlen/bin/ircscreenplay","-s",startswith,"-e",endswith])
               sendmsg(channel, "That irc screenplay was added, thanks!")
 
 def haiku(channel):
-  h = os.popen("haiku").read().replace("\n", " // ")
+  h = subprocess.check_output("haiku").replace("\n", " // ")
   ircsock.send("PRIVMSG "+ channel +" :" + h + "\n")
 
 def connect(server, channel, botnick):
@@ -200,7 +200,7 @@ def connect(server, channel, botnick):
 
 def say_mentions(user, message):
   nick = get_user_from_message(message)
-  menschns = os.popen("/home/karlen/bin/mensch -u %s -t 24 -z +0" % (user)).read().replace("\t", ": ").split("\n")
+  menschns = subprocess.check_output(["/home/karlen/bin/mensch","-u",user,"-t","24","-z","+0"]).replace("\t", ": ").split("\n")
   for mention in menschns:
     if not "" == mention:
       toSend = "PRIVMSG "+ nick + " :" + mention + "\n"
@@ -210,13 +210,8 @@ def say_mentions(user, message):
 
 def say_mentionsof(user, message, fmt):
   args = get_text_from_formatted(fmt).split()
-  if len(args) == 1:
-      searchterm = args[0]
-      menschnsof = os.popen("/home/karlen/bin/mensch -p -w %s | tail -n 5" % (searchterm)).read().replace("\t", ": ").split("\n")
-  elif len(args) == 2:
-      searchterm = args[0]
-      number = args[1]
-      menschnsof = os.popen("/home/karlen/bin/mensch -p -w %s | tail -n %s" % (searchterm,number)).read().replace("\t", ": ").split("\n")
+  searchterm = args[0]
+  menschnsof = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-menschnsof",searchterm]).replace("\t", ": ").split("\n")
   for mentionof in menschnsof:
     if not "" == mentionof:
       toSend = "PRIVMSG "+ user + " :" + mentionof + "\n"
@@ -230,7 +225,7 @@ def say_catchup(channel, user, message, fmt):
         sendmsg(channel, "Too many arguments, stop arguing!")
     else:
         if len(args) == 0:
-            catchups = os.popen("/home/karlen/bin/catchup").read().replace("\t", ": ").split("\n")
+            catchups = subprocess.check_output(["/home/karlen/bin/catchup"]).replace("\t", ": ").split("\n")
             for line in catchups:
                 if not "" == line:
                   toSend = "PRIVMSG "+ user + " :" + line + "\n"
@@ -244,7 +239,7 @@ def say_catchup(channel, user, message, fmt):
             except ValueError:
                 sendmsg(channel, "Those are not numbers buddy")
             else:
-                catchups = os.popen("/home/karlen/bin/catchup -n %s" % (numberback)).read().replace("\t", ": ").split("\n")
+                catchups = subprocess.check_output(["/home/karlen/bin/catchup","-n", numberback]).read().replace("\t", ": ").split("\n")
                 for line in catchups:
                     if not "" == line:
                       toSend = "PRIVMSG "+ user + " :" + line + "\n"
@@ -253,13 +248,13 @@ def say_catchup(channel, user, message, fmt):
                       ircsock.send(toSend)
 
 def say_chatty(channel):
-  chattyOut = os.popen("/home/karlen/bin/chatty").read().split("\n")
+  chattyOut = subprocess.check_output(["/home/karlen/bin/chatty"]).split("\n")
   for line in chattyOut:
     if line:
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_cursey(channel):
-  curseyOut = os.popen("/home/karlen/bin/cursey").read().split("\n")
+  curseyOut = subprocess.check_output(["/home/karlen/bin/cursey"]).split("\n")
   for line in curseyOut:
     if line:
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
@@ -275,12 +270,12 @@ def do_tweet(channel, fmt):
   elif chars < 1:
     ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
   else:
-    #os.popen("echo \"%s\" | tweet > /dev/null" % text)
-    sendmsg(channel, "tweeting is currently unavailable")#"That tweet: '"+ text +"' was some top drawer tweeting, well done")
+    subprocess.call(["/home/karlen/bin/qb/gen.sh","-tweet",text])
+    sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
 
 def say_townage(channel):
-    townageValue = os.popen("/home/karlen/bin/tday").read()
-    sendmsg(channel, "Happy "+ str(townageValue))
+    townageValue = subprocess.check_output(["/home/karlen/bin/tday"])
+    sendmsg(channel, "Happy " + str(townageValue))
 
 def list_commands(channel):
     sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
@@ -306,11 +301,6 @@ def get_text_from_formatted(fmt):
       return ""
   except ValueError:
     return ""
-
-def top_bants(channel):
-  text = os.popen("/home/karlen/bin/mensch -b | shuf -n 1").read().split("\t")[2]
-  if text:
-    ircsock.send("PRIVMSG "+ channel + " :" + text + "\n")
 
 ## INTERFACE TO quote_apropos.hs
 
