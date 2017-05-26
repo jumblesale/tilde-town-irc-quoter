@@ -275,8 +275,8 @@ def do_tweet(channel, fmt):
   elif chars < 1:
     ircsock.send("PRIVMSG "+ channel +" :I won't tweet nothing.\n")
   else:
-    os.popen("echo \"%s\" | tweet > /dev/null" % text)
-    sendmsg(channel, "That tweet: '"+ text +"' was some top drawer tweeting, well done")
+    #os.popen("echo \"%s\" | tweet > /dev/null" % text)
+    sendmsg(channel, "tweeting is currently unavailable")#"That tweet: '"+ text +"' was some top drawer tweeting, well done")
 
 def say_townage(channel):
     townageValue = os.popen("/home/karlen/bin/tday").read()
