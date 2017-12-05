@@ -306,7 +306,7 @@ def get_text_from_formatted(fmt):
 
 def quote_apropos(flag, arg):
   args = flag + " " + arg
-  return os.popen("/home/jumblesale/Code/quote_apropos/quote_apropos " + args).read()
+  return subprocess.check_output(["/home/jumblesale/Code/quote_apropos/quote_apropos", args])
   
 ## LISTENER FUNCTION
 
