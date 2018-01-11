@@ -300,10 +300,12 @@ def get_text_from_formatted(fmt):
 
 def quote_apropos(channel,term):
   quoteApp = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-qa",term]).split("\n")
+  quoteApp = ''.join(quoteApp)
   return str(quoteApp)
 
 def quote_from(channel,user):
   quoteFromOut = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-qf",user]).split("\n")
+  quoteFromOut = ''.join(quoteFromOut)
   return str(quoteFromOut)
   
 ## LISTENER FUNCTION
