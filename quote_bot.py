@@ -52,12 +52,8 @@ def random_quote_apropos(channel, fmt):
     message = "Sorry, q-apropos only accepts 1 argument."
   else:
     if len(args) == 1:
-      term = args[0]
-    else:
-      term = ""
-    message = quote_apropos("--apropos", term)
-    if len(message) >= 256:
-        message =  message[:253] + '...'
+      term = str(args[0])
+      message = quote_apropos(channel,term)
   sendmsg(channel, message)
 
 def random_quote_from(channel, fmt):
@@ -66,10 +62,8 @@ def random_quote_from(channel, fmt):
     message = "Sorry, q-from only accepts 1 argument."
   else:
     if len(args) == 1:
-      term = args[0]
-      message = quote_apropos("--from", term)
-    if len(message) >= 256:
-        message =  message[:253] + '...'
+      term = str(args[0])
+      message = quote_from(channel,term)
   sendmsg(channel, message)
 
 def random_thing(channel, fmt):
@@ -304,9 +298,13 @@ def get_text_from_formatted(fmt):
 
 ## INTERFACE TO quote_apropos.hs
 
-def quote_apropos(flag, arg):
-  args = flag + " " + arg
-  return subprocess.check_output(["/home/jumblesale/Code/quote_apropos/quote_apropos", args])
+def quote_apropos(channel,term):
+  quoteApp = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-qa",term]).split("\n")
+  return str(quoteApp)
+
+def quote_from(channel,user):
+  quoteFromOut = subprocess.check_output(["/home/karlen/bin/qb/gen.sh","-qf",user]).split("\n")
+  return str(quoteFromOut)
   
 ## LISTENER FUNCTION
 
