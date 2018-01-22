@@ -254,7 +254,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -272,7 +272,7 @@ def say_townage(channel):
     sendmsg(channel, "Happy " + str(townageValue))
 
 def list_commands(channel):
-    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !banter, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -395,9 +395,6 @@ def listen():
 
     if ircmsg.find(":!commands") != -1:
       list_commands(options.channel)
-
-    if ircmsg.find(":!banter") != -1:
-      top_bants(options.channel)
 
     if ircmsg.find(":!random") != -1:
       random_thing(options.channel, formatted)
