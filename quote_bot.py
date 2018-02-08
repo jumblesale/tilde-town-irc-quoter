@@ -148,7 +148,7 @@ def random_quote_add(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) == 1:
       name = args[0]
-      quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-b","-u",name])
+      quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-u",name])
       sendmsg(channel, "That quote was added, thanks!")
   elif len(args) == 2:
       name = args[0]
@@ -158,7 +158,7 @@ def random_quote_add(channel, fmt):
       except ValueError:
           sendmsg(channel, "Those are not numbers buddy")
       else:
-          quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-b","-u",name,"-n",number])
+          quoteadd = subprocess.call(["/home/karlen/bin/ircquoteadd","-u",name,"-n",number])
           sendmsg(channel, "That quote was added, thanks!")
 
 def random_quote_screenplay(channel, fmt):
