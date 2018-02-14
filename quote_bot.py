@@ -108,6 +108,15 @@ def rememberthem(channel, fmt):
    flw = subprocess.check_output(["/home/karlen/bin/qb/p40.sh"]).split("\n")
    ircsock.send("PRIVMSG "+ channel + " :" + "pour out a 40 ounce for " + str(flw[0]) + " :(" + "\n")
 
+def say_countdown(channel, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) > 1:
+        sendmsg(channel, "Sorry, I can't work out that many dates")
+    else:
+        date = args[0] 
+        flw = subprocess.check_output(["/home/karlen/progs/countdown/countdown.py",date]).split("\n")
+        ircsock.send("PRIVMSG "+ channel + " :" + str(flw[0]) + "\n")
+
 def pondareplay(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) == 0:
@@ -254,7 +263,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -272,7 +281,7 @@ def say_townage(channel):
     sendmsg(channel, "Happy " + str(townageValue))
 
 def list_commands(channel):
-    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !commands, Hack my log! ~jumblesale/irc/log")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -377,6 +386,9 @@ def listen():
 
     if ircmsg.find(":!tday") != -1:
       say_townage(options.channel)
+
+    if ircmsg.find(":!countdown") != -1:
+      say_countdown(options.channel, formatted)
 
     if ircmsg.find(":!cursey") != -1:
       say_cursey(options.channel)
