@@ -112,7 +112,9 @@ def say_countdown(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) > 1:
         sendmsg(channel, "Sorry, I can't work out that many dates")
-    else:
+    elif len(args) == 0:
+        sendmsg(channel, "Sorry, I need a date to work with")
+    elif len(args) == 1:
         date = args[0] 
         flw = subprocess.check_output(["/home/karlen/progs/countdown/countdown.py",date]).split("\n")
         ircsock.send("PRIVMSG "+ channel + " :" + str(flw[0]) + "\n")
