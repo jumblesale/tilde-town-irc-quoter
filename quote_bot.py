@@ -100,6 +100,18 @@ def famouslastwords(channel, fmt):
       if line:
           ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def saidwhat(channel, fmt):
+  args = get_text_from_formatted(fmt).split()
+  if len(args) != 2:
+   sendmsg(channel, "Sorry, we need the name of a user and a topic")
+  else:
+   name = args[0]
+   topic = args[1]
+   flw = subprocess.check_output(["/home/karlen/bin/qb/gen.sh", "-ref", name, topic]).split("\n")
+   for line in flw:
+      if line:
+          ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
 def rememberthem(channel, fmt):
   args = get_text_from_formatted(fmt).split()
   if len(args) >= 1:
@@ -265,7 +277,7 @@ def say_cursey(channel):
       ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !commands. Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "quote_bot here! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !saidwhat, !commands. Hack my log! ~jumblesale/irc/log")
 
 def do_tweet(channel, fmt):
   text = get_text_from_formatted(fmt)
@@ -283,7 +295,7 @@ def say_townage(channel):
     sendmsg(channel, "Happy " + str(townageValue))
 
 def list_commands(channel):
-    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !commands, Hack my log! ~jumblesale/irc/log")
+    sendmsg(channel, "I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !mention-of, !random, !catchup, !chatty, !cursey, !tweet, !haiku, !famouslastwords, !ircpopularity, !pondareplay, !pourouta40, !chatabout, !tday, !rollcall, !countdown, !saidwhat, !commands, Hack my log! ~jumblesale/irc/log")
   
 ## FUNCTIONS FOR PARSING THE IRC MESSAGES
 
@@ -367,6 +379,9 @@ def listen():
 
     if ircmsg.find(":!famouslastwords") != -1:
       famouslastwords(options.channel, formatted)
+
+    if ircmsg.find(":!saidwhat") != -1:
+      saidwhat(options.channel, formatted)
 
     if ircmsg.find(":!pourouta40") != -1:
       rememberthem(options.channel, formatted)
