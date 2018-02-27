@@ -104,6 +104,15 @@ def famousfirstwords(channel, fmt):
         flw = subprocess.check_output(["/home/karlen/bin/famouslastwords", "-y", name])
         ircsock.send("PRIVMSG "+ channel + " :" + str(flw) + "\n")
 
+def lasttimeon(channel, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) != 1:
+        sendmsg(channel, "Sorry, we need the name of one user")
+    else:
+        name = args[0]
+        flw = subprocess.check_output(["/home/karlen/bin/famouslastwords", "-l", name])
+        ircsock.send("PRIVMSG "+ channel + " :" + str(flw) + "\n")
+
 def saidwhat(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) != 2:
@@ -389,6 +398,9 @@ def listen():
 
         if ircmsg.find(":!famousfirstwords") != -1:
             famousfirstwords(options.channel, formatted)
+
+        if ircmsg.find(":!lasttimeon") != -1:
+            lasttimeon(options.channel, formatted)
 
         if ircmsg.find(":!saidwhat") != -1:
             saidwhat(options.channel, formatted)
