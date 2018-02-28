@@ -104,6 +104,17 @@ def famousfirstwords(channel, fmt):
         flw = subprocess.check_output(["/home/karlen/bin/famouslastwords", "-y", name])
         ircsock.send("PRIVMSG "+ channel + " :" + str(flw) + "\n")
 
+def ccstat(channel, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) != 1:
+        sendmsg(channel, "Sorry, we need the name of one user")
+    else:
+        name = args[0]
+        flw = subprocess.check_output(["/home/karlen/bin/giveme20cc", "-u", name]).split("\n")
+        for line in flw:
+            ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+            time.sleep(0.75)
+
 def lasttimeon(channel, fmt):
     args = get_text_from_formatted(fmt).split()
     if len(args) != 1:
@@ -128,7 +139,7 @@ def say_help(channel, fmt):
     if len(args) == 1:
         name = args[0]
         if name == "quote_bot":
-            sendmsg(channel, "My name is quote_bot! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !catchup, !chatty, !cursey, !tweet, !haiku, !random (tilde, gif, youtube, image, link), !famouslastwords, !famousfirstwords, !pondareplay, !pourouta40, !mention-of, !chatabout, !tday, !countdown Hack my log! ~jumblesale/irc/botlog. Contact ~jumblesale or ~karlen if I am being annoying")
+            sendmsg(channel, "My name is quote_bot! I respond to !quote (!q-apropos, !q-from, !q-add, !q-screenplay), !mentions, !catchup, !chatty, !rchatty, !cursey, !ccstat, !tweet, !haiku, !random (tilde, gif, youtube, image, link), !famouslastwords, !famousfirstwords, !pondareplay, !pourouta40, !mention-of, !chatabout, !tday, !countdown Contact ~jumblesale or ~karlen if I am being annoying")
 
 def rememberthem(channel, fmt):
     args = get_text_from_formatted(fmt).split()
@@ -229,7 +240,7 @@ def haiku(channel):
 
 def connect(server, channel, botnick):
     ircsock.connect((server, 6667))
-    ircsock.send("USER "+ botnick +" "+ botnick +" "+ botnick +" :This bot is a result of a tutoral covered on http://shellium.org/wiki.\n") # user authentication
+    ircsock.send("USER "+ botnick +" "+ botnick +" "+ botnick +" :~jumblesale/~karlen.\n") # user authentication
     ircsock.send("NICK "+ botnick +"\n")
 
     joinchan(channel)
@@ -289,6 +300,22 @@ def say_chatty(channel):
         if line:
             ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
+def say_recentchatty(channel, fmt):
+    args = get_text_from_formatted(fmt).split()
+    if len(args) != 1:
+        sendmsg(channel, "Sorry, we just need a time period")
+    else:
+        time = args[0]
+        try:
+            int(time)
+        except ValueError:
+            ircsock.send("PRIVMSG "+ channel + " :Sorry, I need an integer "+ "\n")
+        else:
+            chattyOut = subprocess.check_output(["/home/karlen/bin/chatty","-t",time]).split("\n")
+            for line in chattyOut:
+                if line:
+                    ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
+
 def say_cursey(channel):
     curseyOut = subprocess.check_output(["/home/karlen/bin/cursey"]).split("\n")
     for line in curseyOut:
@@ -296,7 +323,7 @@ def say_cursey(channel):
             ircsock.send("PRIVMSG "+ channel + " :" + line + "\n")
 
 def say_rollcall(channel):
-    sendmsg(channel, "quote_bot here! (contact ~jumblesale/~karlen)")
+    sendmsg(channel, "quote_bot here! Run ! help quote_bot for further help (contact ~jumblesale/~karlen)")
 
 def do_tweet(channel, fmt):
     text = get_text_from_formatted(fmt)
@@ -399,6 +426,9 @@ def listen():
         if ircmsg.find(":!famousfirstwords") != -1:
             famousfirstwords(options.channel, formatted)
 
+        if ircmsg.find(":!ccstat") != -1:
+            ccstat(options.channel, formatted)
+
         if ircmsg.find(":!lasttimeon") != -1:
             lasttimeon(options.channel, formatted)
 
@@ -422,6 +452,9 @@ def listen():
 
         if ircmsg.find(":!chatty") != -1:
             say_chatty(options.channel)
+
+        if ircmsg.find(":!rchatty") != -1:
+            say_recentchatty(options.channel, formatted)
 
         if ircmsg.find(":!help") != -1:
             say_help(options.channel, formatted)
